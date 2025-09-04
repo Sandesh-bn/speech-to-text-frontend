@@ -1,0 +1,15 @@
+.player-button {
+    border-radius: 50%;
+    border: none;
+    padding: 10px;
+}
+
+.player-button:hover {
+    opacity: 80%;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}

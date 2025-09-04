@@ -1,0 +1,51 @@
+.transcript-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 700px;
+  margin: 20px auto;
+  overflow-y: scroll;
+  padding-bottom: 20px;
+}
+
+.message-row {
+  display: flex;
+  width: 100%;
+}
+
+.message-row.left {
+  justify-content: flex-start;
+}
+
+.message-row.right {
+  justify-content: flex-end;
+}
+
+.bubble {
+  padding: 10px 14px;
+  border-radius: 16px;
+  max-width: 70%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.bubble-left {
+  background-color: #e1f0ff;
+  border-top-left-radius: 0;
+}
+
+.bubble-right {
+  background-color: #f5e9ff;
+  border-top-right-radius: 0;
+}
+
+.speaker {
+  font-weight: bold;
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+}
+
+.text {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
