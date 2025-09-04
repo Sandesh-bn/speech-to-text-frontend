@@ -5,10 +5,8 @@ import Transcripts from './Transcripts';
 import AudioPlayer from './AudioPlayer';
 import './AudioUpload.css';
 function AudioUpload() {
-  const [file, setFile] = useState(null);
   const [speechData, setSpeechData] = useState([]);
   const [errorMessage, setError] = useState(null);
-  const [label, setLabel] = useState('Transcribe')
   const inputRef = useRef();
   let [selectedFile, setSelectedFile] = useState(null);
 
@@ -19,7 +17,6 @@ function AudioUpload() {
     marginTop: '50px'
   }
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
     setSelectedFile(e.target.files[0])
   };
 
@@ -45,7 +42,7 @@ function AudioUpload() {
     try {
       setUploadStatus("uploading")
       const formdata = new FormData();
-      formdata.append("audio", file);
+      formdata.append("audio", selectedFile);
       const uploadRes = await fetch(url + '/upload', {
         method: "POST",
         body: formdata,
@@ -92,16 +89,6 @@ function AudioUpload() {
       setUploadStatus('select')
     }
   };
-
-  useEffect(() => {
-    if (uploadStatus == 'select')
-      setLabel('Transcribe')
-    else if (uploadStatus == 'uploading')
-      setLabel('Loading')
-    else if (uploadStatus == 'done')
-      setLabel('Done')
-  }, [uploadStatus])
-
 
   function formatTranscript(input) {
     const lines = input.split("\n");
@@ -207,7 +194,7 @@ function AudioUpload() {
             </div>
           </div>
 
-          {file && <AudioPlayer audioFile={file} />}
+          {selectedFile && <AudioPlayer audioFile={selectedFile} />}
           {errorMessage && <div>Failed to transcribe. Please try again</div>}
 
           {uploadStatus == 'uploading' &&
@@ -231,9 +218,6 @@ function AudioUpload() {
           }
         </>
       )}
-
-
-
     </div>
   )
 }
