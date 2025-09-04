@@ -7,13 +7,14 @@ import './AudioUpload.css';
 function AudioUpload() {
   const [file, setFile] = useState(null);
   const [speechData, setSpeechData] = useState([]);
+  const [errorMessage, setError] = useState(null);
   const [label, setLabel] = useState('Transcribe')
   const inputRef = useRef();
   let [selectedFile, setSelectedFile] = useState(null);
 
   let [uploadStatus, setUploadStatus] = useState('select');
-  let url = 'http://localhost:5000/upload'
-
+  // let url = 'http://localhost:5000/upload'
+  let url = 'https://speech-to-text-backend-blue.vercel.app'
   let loaderStyle = {
     marginTop: '50px'
   }
@@ -27,6 +28,7 @@ function AudioUpload() {
   }
 
   function clearFileInput() {
+    setError(null);
     inputRef.current.value = "";
     setSelectedFile(null);
     setSpeechData([])
@@ -34,6 +36,7 @@ function AudioUpload() {
   }
 
   const handleUpload = async () => {
+    setError(null)
     if (uploadStatus == 'done') {
       clearFileInput();
       return;
@@ -43,15 +46,49 @@ function AudioUpload() {
       setUploadStatus("uploading")
       const formdata = new FormData();
       formdata.append("audio", file);
-      const res = await fetch(url, {
-        method: 'POST',
+      const uploadRes = await fetch(url + '/upload', {
+        method: "POST",
         body: formdata,
       });
-      const data = await res.json();
-      setSpeechData(data.raw)
+
+      const uploadData = await uploadRes.json();
+
+      if (!uploadData.transcriptId) {
+        throw new Error("No transcriptId returned from server");
+      }
+      const transcriptId = uploadData.transcriptId;
+
+
+
+      //  poll until transcript is ready
+      let transcriptData;
+      while (true) {
+        const res = await fetch(url + `/transcript/${transcriptId}`);
+        transcriptData = await res.json();
+
+        if (transcriptData.status === "completed") {
+          console.log("Transcript ready:", transcriptData);
+          break;
+        }
+
+        else if (transcriptData.status === "error") {
+          throw new Error(transcriptData.error || "Transcription failed");
+        }
+
+        console.log("Still processing...");
+        await new Promise((resolve) => setTimeout(resolve, 5000)); // wait 5s
+      }
+
+
+      setSpeechData(transcriptData.utterances)
       setUploadStatus('done')
+
+      // const data = await res.json();
+      // setSpeechData(data.raw)
+      // setUploadStatus('done')
     }
     catch (error) {
+      setError(JSON.stringify(error));
       setUploadStatus('select')
     }
   };
@@ -171,7 +208,7 @@ function AudioUpload() {
           </div>
 
           {file && <AudioPlayer audioFile={file} />}
-
+          {errorMessage && <div>Failed to transcribe. Please try again</div>}
 
           {uploadStatus == 'uploading' &&
             <>
