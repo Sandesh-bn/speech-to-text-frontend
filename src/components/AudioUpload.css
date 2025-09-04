@@ -39,7 +39,6 @@ input[type="file"] {
 }
 
 .file-card {
-    width: 300px;
     display: flex;
     align-items: center;
     gap: 15px;
