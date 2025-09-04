@@ -6,6 +6,8 @@
   margin: 20px auto;
   overflow-y: scroll;
   padding-bottom: 20px;
+  background: rgb(251, 251, 251);
+  padding: 20px;
 }
 
 .message-row {
